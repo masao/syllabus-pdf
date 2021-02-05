@@ -16,6 +16,7 @@ def html2longtable(doc)
     names[attr] = attr_value
   end
   result = <<EOF
+\\noindent
 \\begin{longtable}{|p{10zw}|p{40zw}|}
 \\hline
 授業科目名 & #{names[:title]}\\\\\\hline
@@ -32,16 +33,23 @@ EOF
       topic = content.xpath("./div[@id='topics']").first
       if topic
         value = ""
-        value << topic.xpath("./p[@id='pretopic']").map{|e| e.val }.join("\n\n")
+        topic.xpath("./p[@id='pretopics']").each do |e|
+          value << e.content
+          value << "\n\n"
+        end
         rows = []
         topic.xpath(".//table/tr").each do |tr|
           num = tr.xpath("./th").val
           val = tr.xpath("./td").val
-          rows << "#{num} & #{val}"
+          if val.empty?
+            rows << "&#{num}"
+          else
+            rows << "#{num} & #{val}"
+          end
         end
         if not rows.empty?
           value << <<-EOF
-          \\begin{tabular}{lp{30zw}}
+          \\noindent\\begin{tabular}{lp{34zw}}
           #{rows.join("\\\\\n")}
           \\end{tabular}
           EOF
@@ -54,7 +62,6 @@ EOF
       end
     end
   end
-
   divs = doc.xpath("//div")
   divs.each do |div|
     id = div["id"]
@@ -69,7 +76,7 @@ EOF
 end
 
 latex = <<'EOF'
-\documentclass{jsarticle}
+\documentclass[a4j]{jsarticle}
 \usepackage{longtable}
 \pagestyle{empty}
 \begin{document}
