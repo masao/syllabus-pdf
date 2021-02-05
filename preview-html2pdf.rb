@@ -4,7 +4,12 @@ require "nokogiri"
 
 class Nokogiri::XML::NodeSet
   def val
-    self.first&.inner_html&.gsub(/<BR>/i, "\\par ")&.strip
+    self.first&.inner_html&.escape_tex
+  end
+end
+class String
+  def escape_tex
+    self.strip.gsub(/<BR>\Z/i, "").gsub(/<BR>/i, "\\par ").gsub(/_/, "\\_").gsub(/~/, "～")
   end
 end
 
@@ -17,7 +22,7 @@ def html2longtable(doc)
   end
   result = <<EOF
 \\noindent
-\\begin{longtable}{|p{10zw}|p{40zw}|}
+\\begin{longtable}{|p{10zw}|p{42zw}|}
 \\hline
 授業科目名 & #{names[:title]}\\\\\\hline
 科目番号 & #{names[:course]}\\\\\\hline
@@ -34,7 +39,7 @@ EOF
       if topic
         value = ""
         topic.xpath("./p[@id='pretopics']").each do |e|
-          value << e.content
+          value << e.inner_html.escape_tex
           value << "\n\n"
         end
         rows = []
@@ -49,7 +54,7 @@ EOF
         end
         if not rows.empty?
           value << <<-EOF
-          \\noindent\\begin{tabular}{lp{34zw}}
+          \\noindent\\begin{tabular}{lp{36zw}}
           #{rows.join("\\\\\n")}
           \\end{tabular}
           EOF
@@ -57,7 +62,7 @@ EOF
       end
       if value and not value.empty?
         result << <<-EOF
-        #{name} & #{value}\\\\\\hline
+        #{name} & #{value.strip}\\\\\\hline
         EOF
       end
     end
@@ -78,6 +83,7 @@ end
 latex = <<'EOF'
 \documentclass[a4j]{jsarticle}
 \usepackage{longtable}
+\usepackage[top=10truemm,bottom=15truemm,left=18truemm,right=20truemm]{geometry}
 \pagestyle{empty}
 \begin{document}
 EOF
