@@ -22,7 +22,7 @@ def html2longtable(doc)
   end
   result = <<EOF
 \\noindent
-\\begin{longtable}{|p{10zw}|p{42zw}|}
+\\begin{longtable}{|p{9zw}|p{44zw}|}
 \\hline
 授業科目名 & #{names[:title]}\\\\\\hline
 科目番号 & #{names[:course]}\\\\\\hline
@@ -54,7 +54,7 @@ EOF
         end
         if not rows.empty?
           value << <<-EOF
-          \\noindent\\begin{tabular}{lp{36zw}}
+          \\noindent\\begin{tabular}{lp{38zw}}
           #{rows.join("\\\\\n")}
           \\end{tabular}
           EOF
