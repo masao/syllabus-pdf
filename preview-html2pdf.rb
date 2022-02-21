@@ -49,6 +49,8 @@ EOF
           if val.empty?
             rows << "&#{num}"
           else
+            val = val.gsub(/<span class="officehour-address">.*?<\/span>/m, "")
+            val = val.gsub(/<a [^>]+?>/, "").gsub(/<\/a>/, "")
             rows << "#{num} & #{val}"
           end
         end
