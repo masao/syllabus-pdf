@@ -9,7 +9,7 @@ class Nokogiri::XML::NodeSet
 end
 class String
   def escape_tex
-    self.strip.gsub(/<BR>\Z/i, "").gsub(/<BR>/i, "\\par ").gsub(/_/, "\\_").gsub(/~/, "～")
+    self.strip.gsub(/<BR>\Z/i, "").gsub(/<BR>/i, "\\par ").gsub(/_/, "\\_").gsub(/~/, "～").gsub(/⁺/, "+")
   end
 end
 
